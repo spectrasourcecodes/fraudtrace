@@ -60,7 +60,7 @@ const UserWallet = () => {
     try {
       const amount = parseFloat(withdrawAmount);
       await api.post('/api/wallet/withdraw', { amount, address: withdrawAddress });
-      toast.success('Withdrawal simulated successfully');
+      toast.success('Withdrawal successfully');
       setWithdrawAmount('');
       setWithdrawAddress('');
       fetchWallet();
@@ -242,7 +242,7 @@ const UserWallet = () => {
           <div className="flex items-start space-x-3 p-4 bg-yellow-500/5 border border-yellow-500/10 rounded-xl">
             <AlertTriangle className="w-5 h-5 text-yellow-400 flex-shrink-0 mt-0.5" />
             <p className="text-sm text-gray-300">
-              You are about to simulate a withdrawal of{' '}
+              You are about to make a withdrawal of{' '}
               <strong className="text-white">{withdrawAmount} {wallet.currency}</strong>{' '}
               to the address:
               <br />
