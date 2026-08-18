@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import {
   Wallet, DollarSign, ArrowUpRight, AlertTriangle,
-  Lock, CheckCircle, Clock, TrendingUp, RefreshCw,
+  Lock, CheckCircle, Clock, RefreshCw,
 } from 'lucide-react';
 import UserLayout from '../../components/layout/UserLayout';
 import Card from '../../components/common/Card';
@@ -10,6 +10,7 @@ import Button from '../../components/common/Button';
 import Input from '../../components/common/Input';
 import Badge from '../../components/common/Badge';
 import LoadingSpinner from '../../components/common/LoadingSpinner';
+import Modal from '../../components/common/Modal';
 import { api } from '../../services/api';
 import toast from 'react-hot-toast';
 
@@ -17,8 +18,10 @@ const UserWallet = () => {
   const [wallet, setWallet] = useState(null);
   const [loading, setLoading] = useState(true);
   const [withdrawAmount, setWithdrawAmount] = useState('');
+  const [withdrawAddress, setWithdrawAddress] = useState('');
   const [withdrawing, setWithdrawing] = useState(false);
   const [refreshing, setRefreshing] = useState(false);
+  const [showWarning, setShowWarning] = useState(false);
 
   const fetchWallet = async () => {
     try {
@@ -37,18 +40,29 @@ const UserWallet = () => {
     fetchWallet();
   }, []);
 
-  const handleWithdraw = async () => {
+  const handleProceed = () => {
     const amount = parseFloat(withdrawAmount);
     if (!amount || amount <= 0) {
       toast.error('Please enter a valid amount');
       return;
     }
+    if (!withdrawAddress.trim()) {
+      toast.error('Please enter a recipient wallet address');
+      return;
+    }
+    // Show warning modal first
+    setShowWarning(true);
+  };
 
+  const handleConfirmWithdrawal = async () => {
+    setShowWarning(false);
     setWithdrawing(true);
     try {
-      const response = await api.post('/api/wallet/withdraw', { amount });
-      toast.success(response.data.message || 'Withdrawal successful');
+      const amount = parseFloat(withdrawAmount);
+      await api.post('/api/wallet/withdraw', { amount, address: withdrawAddress });
+      toast.success('Withdrawal simulated successfully');
       setWithdrawAmount('');
+      setWithdrawAddress('');
       fetchWallet();
     } catch (err) {
       toast.error(err.response?.data?.message || 'Withdrawal failed');
@@ -84,7 +98,7 @@ const UserWallet = () => {
     );
   }
 
-  const equivalents = wallet.equivalents || { USDT: '0.00', BTC: '0.00', ETH: '0.00' };
+  const equivalents = wallet.equivalents || { USDT: '0.00', BTC: '0.00000000', ETH: '0.00000000' };
 
   return (
     <UserLayout title="My Wallet">
@@ -145,18 +159,19 @@ const UserWallet = () => {
         {/* Equivalent Balances */}
         <Card>
           <h3 className="text-lg font-semibold text-white mb-4">Equivalent Balances</h3>
-          <div className="grid grid-cols-3 gap-4">
+          {/* Responsive grid: 1 column on mobile, 3 columns on sm+ */}
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
             <div className="bg-slate-800/30 rounded-xl p-4 text-center">
               <p className="text-xs text-gray-400">USDT</p>
-              <p className="text-lg font-bold text-emerald-400 mt-1">{equivalents.USDT}</p>
+              <p className="text-lg font-bold text-emerald-400 mt-1 break-all">{equivalents.USDT}</p>
             </div>
             <div className="bg-slate-800/30 rounded-xl p-4 text-center">
               <p className="text-xs text-gray-400">BTC</p>
-              <p className="text-lg font-bold text-orange-400 mt-1">{equivalents.BTC}</p>
+              <p className="text-lg font-bold text-orange-400 mt-1 break-all">{equivalents.BTC}</p>
             </div>
             <div className="bg-slate-800/30 rounded-xl p-4 text-center">
               <p className="text-xs text-gray-400">ETH</p>
-              <p className="text-lg font-bold text-purple-400 mt-1">{equivalents.ETH}</p>
+              <p className="text-lg font-bold text-purple-400 mt-1 break-all">{equivalents.ETH}</p>
             </div>
           </div>
         </Card>
@@ -174,15 +189,24 @@ const UserWallet = () => {
               icon={DollarSign}
               disabled={wallet.status !== 'active'}
             />
+            <Input
+              label="Recipient Wallet Address"
+              type="text"
+              value={withdrawAddress}
+              onChange={(e) => setWithdrawAddress(e.target.value)}
+              placeholder="Enter destination wallet address"
+              icon={Wallet}
+              disabled={wallet.status !== 'active'}
+            />
             <Button
               fullWidth
               size="lg"
               icon={ArrowUpRight}
-              onClick={handleWithdraw}
+              onClick={handleProceed}
               loading={withdrawing}
               disabled={wallet.status !== 'active' || wallet.balance <= 0}
             >
-              Withdraw Funds
+              Proceed to Withdraw
             </Button>
             {wallet.status !== 'active' && (
               <p className="text-xs text-yellow-400 flex items-center gap-2">
@@ -211,6 +235,32 @@ const UserWallet = () => {
           </Card>
         )}
       </div>
+
+      {/* Warning Modal */}
+      <Modal isOpen={showWarning} onClose={() => setShowWarning(false)} title="⚠️ Important Warning" size="sm">
+        <div className="space-y-4">
+          <div className="flex items-start space-x-3 p-4 bg-yellow-500/5 border border-yellow-500/10 rounded-xl">
+            <AlertTriangle className="w-5 h-5 text-yellow-400 flex-shrink-0 mt-0.5" />
+            <p className="text-sm text-gray-300">
+              You are about to simulate a withdrawal of{' '}
+              <strong className="text-white">{withdrawAmount} {wallet.currency}</strong>{' '}
+              to the address:
+              <br />
+              <span className="text-xs break-all text-gray-400">{withdrawAddress || 'N/A'}</span>
+              <br /><br />
+              This action will reduce your available balance. Please confirm that you want to proceed.
+            </p>
+          </div>
+          <div className="flex gap-3">
+            <Button variant="outline" fullWidth onClick={() => setShowWarning(false)}>
+              Cancel
+            </Button>
+            <Button variant="primary" fullWidth onClick={handleConfirmWithdrawal} loading={withdrawing}>
+              OK, Confirm
+            </Button>
+          </div>
+        </div>
+      </Modal>
     </UserLayout>
   );
 };
