@@ -132,7 +132,7 @@ const UserWallet = () => {
                 <p className="text-xs text-gray-400">
                   {wallet.status === 'active'
                     ? 'Your wallet is active and you can make withdrawals.'
-                    : 'Your wallet is inactive. Please make a 1 time deposit of $100 to reactivate and proceed with the withdrawal.'}
+                    : 'Your wallet is inactive. Please make a one (1x) time deposit of $100 to reactivate your wallet and proceed with the withdrawal process.'}
                 </p>
               </div>
             </div>
