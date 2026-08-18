@@ -84,7 +84,7 @@ const UserWallet = () => {
     );
   }
 
-  const equivalents = wallet.equivalents || { USDT: '0.00', BTC: '0.00000000', ETH: '0.00000000' };
+  const equivalents = wallet.equivalents || { USDT: '0.00', BTC: '0.00', ETH: '0.00' };
 
   return (
     <UserLayout title="My Wallet">
