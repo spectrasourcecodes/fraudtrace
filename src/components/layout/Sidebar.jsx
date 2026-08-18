@@ -18,6 +18,7 @@ import {
   BarChart3,
   X,
   User,
+  Wallet,
 } from 'lucide-react';
 import { useAuth } from '../../contexts/AuthContext';
 

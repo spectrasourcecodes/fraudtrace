@@ -4,7 +4,7 @@ import { Link, useLocation, useNavigate } from 'react-router-dom';
 import {
   Shield, LayoutDashboard, Users, FileText, Settings,
   Activity, Database, BarChart3, Bell, Search,
-  LogOut, Menu, X, BellDot, User,
+  LogOut, Menu, X, BellDot, User, Wallet,
 } from 'lucide-react';
 import { useAuth } from '../../contexts/AuthContext';
 
