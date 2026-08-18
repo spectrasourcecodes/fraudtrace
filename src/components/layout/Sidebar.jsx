@@ -27,6 +27,7 @@ const userMenuItems = [
   { icon: AlertTriangle, label: 'Report Fraud', path: '/report-fraud' },
   { icon: Package, label: 'Evidence Center', path: '/evidence' },
   { icon: Bell, label: 'Notifications', path: '/notifications' },
+  { icon: Wallet, label: 'My Wallet', path: '/wallet' },
   { icon: MessageSquare, label: 'Support', path: '/support' },
   { icon: Settings, label: 'Settings', path: '/settings' },
 ];

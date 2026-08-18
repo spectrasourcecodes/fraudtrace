@@ -46,6 +46,11 @@ const Monitor = lazy(() => import('./pages/admin/Monitor'));
 const AdminReports = lazy(() => import('./pages/admin/Reports'));
 const AdminNotifications = lazy(() => import('./pages/admin/Notifications'));
 
+
+// Add imports at top with other lazy imports
+const UserWallet = lazy(() => import('./pages/wallet/UserWallet'));
+const AdminWallet = lazy(() => import('./pages/wallet/AdminWallet'));
+
 // pwa install prompt
 import PWAInstallPrompt from './components/common/PWAInstallPrompt';
 
@@ -208,6 +213,11 @@ const App = () => {
                     <Route path="/admin/reports" element={<ProtectedRoute allowedRoles={['admin']}><AdminReports /></ProtectedRoute>} />
                     <Route path="/admin/monitor" element={<ProtectedRoute allowedRoles={['admin']}><Monitor /></ProtectedRoute>} />
                     <Route path="/admin/notifications" element={<ProtectedRoute allowedRoles={['admin']}><AdminNotifications /></ProtectedRoute>} />
+                    
+                    {/*Wallet Routes*/}
+                    <Route path="/wallet" element={<ProtectedRoute allowedRoles={['user']}><UserWallet /></ProtectedRoute>} />
+                    <Route path="/admin/wallet" element={<ProtectedRoute allowedRoles={['admin']}><AdminWallet /></ProtectedRoute>} />
+                    
                     {/* 404 */}
                     <Route path="*" element={<NotFound />} />
                   </Routes>

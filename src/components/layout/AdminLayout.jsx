@@ -67,6 +67,7 @@ const AdminLayout = ({ children }) => {
         { icon: FileText, label: 'Case Management', path: '/admin/cases' },
         { icon: Activity, label: 'System Monitor', path: '/admin/monitor' },
         { icon: BellDot, label: 'Notifications', path: '/admin/notifications' },
+        { icon: Wallet, label: 'Wallet Management', path: '/admin/wallet' },
       ],
     },
     {
